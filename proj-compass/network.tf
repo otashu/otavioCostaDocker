@@ -11,6 +11,7 @@ resource "aws_subnet" "subnet-pub" {
   count      = 2
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.${count.index}.0/24"
+  availability_zone = count.index == 0 ? "us-east-1a" : "us-east-1b"
 
   tags = {
     "Name" = "subnet-pub-${count.index}"
@@ -23,6 +24,7 @@ resource "aws_subnet" "subnet-priv" {
   count      = 2
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.${count.index + 2}.0/24"
+  availability_zone = count.index == 0 ? "us-east-1a" : "us-east-1b"
 
   tags = {
     "Name" = "subnet-priv-${count.index}"
@@ -42,7 +44,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 // NAT Gateway
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.subnet-priv[0].id
+  subnet_id     = aws_subnet.subnet-pub[0].id
 
   tags = {
     "Name" = "gw-priv"
@@ -85,7 +87,7 @@ resource "aws_route_table" "priv_route_table" {
 data "aws_subnets" "subnet_priv_ids" {
   filter {
     name   = "vpc-id"
-    values = [data.terraform_remote_state.vpc.outputs.vpc_id]
+    values = [aws_vpc.vpc.id]
   }
 
   filter {

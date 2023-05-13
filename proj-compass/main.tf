@@ -1,34 +1,46 @@
-provider "aws" {
-  region = "us-east-1"
-}
+terraform {
+  required_version = ">= 1.0.0"
 
-data "terraform_remote_state" "vpc" {
-  backend = "s3"
-  config = {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.67.0"
+    }
+  }
+  backend "s3" {
     bucket = "bucket-terraform-proj-compass"
-    key    = "aws-vpc/terraform.tfstate"
+    key    = "aws-proj/terraform.tfstate"
     region = "us-east-1"
   }
+}
+
+provider "aws" {
+  region = "us-east-1"
 }
 
 resource "aws_security_group" "sg-bastion" {
   name        = "sgbastion"
   description = "sgbastion"
 
-  vpc_id = data.terraform_remote_state.vpc.outputs.aws_vpc.vpc.id
-
+  vpc_id = aws_vpc.vpc.id
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
+
 resource "aws_security_group" "sg-principal" {
   name        = "sgprincipal"
   description = "sgprincipal"
-  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+  vpc_id      = aws_vpc.vpc.id
 
 
   ingress {
@@ -99,7 +111,7 @@ resource "aws_security_group" "sg-principal" {
 resource "aws_instance" "bastion" {
   ami           = "ami-06a0cd9728546d178"
   instance_type = "t2.micro"
-  key_name      = "Charizard"
+  key_name      = "chave"
   tags = {
     Name       = "PB UNIVEST URI - bastion"
     CostCenter = "C092000004"
@@ -107,6 +119,7 @@ resource "aws_instance" "bastion" {
   }
 
   vpc_security_group_ids = [aws_security_group.sg-bastion.id]
+  subnet_id              = aws_subnet.subnet-pub[0].id
 
   volume_tags = {
     Name       = "PB UNIVEST URI - bastion"
@@ -118,7 +131,7 @@ resource "aws_instance" "bastion" {
 resource "aws_instance" "principal" {
   ami           = "ami-06a0cd9728546d178"
   instance_type = "t2.micro"
-  key_name      = "Charizard"
+  key_name      = "chave"
   tags = {
     Name       = "PB UNIVEST URI - principal"
     CostCenter = "C092000004"
@@ -126,6 +139,8 @@ resource "aws_instance" "principal" {
   }
 
   vpc_security_group_ids = [aws_security_group.sg-principal.id]
+  subnet_id              = aws_subnet.subnet-priv[0].id
+
 
   volume_tags = {
     Name       = "PB UNIVEST URI - principal"
@@ -139,7 +154,7 @@ resource "aws_autoscaling_group" "asg_principal" {
   min_size             = 1
   max_size             = 2
   desired_capacity     = 2
-  vpc_zone_identifier  = data.terraform_remote_state.vpc.outputs.private_subnets
+  vpc_zone_identifier  = aws_subnet.subnet-priv[*].id
   launch_configuration = aws_launch_configuration.lc_principal.name
 }
 
@@ -158,7 +173,7 @@ resource "aws_launch_configuration" "lc_principal" {
 resource "aws_lb" "ALB-compass" {
   name               = "ABL-compass"
   load_balancer_type = "application"
-  subnets            = data.terraform_remote_state.vpc.outputs.aws_subnet.subnet-pub[*].id
+  subnets            = [aws_subnet.subnet-pub[0].id, aws_subnet.subnet-pub[1].id]
 
   security_groups = [aws_security_group.sg-principal.id]
 
@@ -171,7 +186,7 @@ resource "aws_lb_target_group" "TG-compass" {
   name     = "TG-compass"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.vpc.outputs.aws_vpc.vpc.id
+  vpc_id   = aws_vpc.vpc.id
 
   health_check {
     path = "/"

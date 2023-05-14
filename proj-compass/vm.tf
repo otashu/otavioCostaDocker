@@ -101,6 +101,8 @@ resource "aws_instance" "bastion" {
 
   user_data = <<-EOF
     #!/bin/bash
+    yum update -y
+    yum upgrade -y
     chmod 400 /home/ec2-user/chave.pem
     EOF
 

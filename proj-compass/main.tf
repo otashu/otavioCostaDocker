@@ -59,7 +59,7 @@ resource "aws_db_instance" "RDS" {
   engine                 = "mysql"
   engine_version         = "8.0.32"
   instance_class         = "db.t3.micro"
-  //identifier             = "db-compass"
+  identifier             = "db-compass"
   db_name                = "wordpress"
   username               = "admin"
   password               = "admin123"

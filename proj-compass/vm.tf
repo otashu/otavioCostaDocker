@@ -106,16 +106,18 @@ resource "aws_instance" "bastion" {
   ami           = "ami-06a0cd9728546d178" //Amazon Linux 2
   instance_type = "t2.micro"
   key_name      = "chave" //Mude para o nome de sua chave
+  
   tags = {
     Name       = "PB UNIVEST URI - bastion"
     CostCenter = "C092000004"
     Project    = "PB UNIVEST URI"
   }
-
-  user_data = <<-EOF
-    #!/bin/bash
-    chmod 400 /home/ec2-user/chave.pem
-    EOF
+  //tags para o volume
+  volume_tags = {
+    Name       = "PB UNIVEST URI - bastion"
+    CostCenter = "C092000004"
+    Project    = "PB UNIVEST URI"
+  }
 
   provisioner "file" {
     source      = "chave.pem" //Mude para o nome de sua chave
@@ -128,21 +130,19 @@ resource "aws_instance" "bastion" {
       host        = self.public_ip
     }
   }
+  user_data = <<-EOF
+    #!/bin/bash
+    chmod 400 /home/ec2-user/chave.pem
+    EOF
 
   vpc_security_group_ids = [aws_security_group.sg-bastion.id] //Define o SG do bastion
   subnet_id              = aws_subnet.subnet-pub[0].id        //Define subnet do bastion
 
-  //tags para o volume
-  volume_tags = {
-    Name       = "PB UNIVEST URI - bastion"
-    CostCenter = "C092000004"
-    Project    = "PB UNIVEST URI"
-  }
 }
 
 //Cria Launch Configuration
 resource "aws_launch_configuration" "lc_principal" {
-  name_prefix     = "my-lc"
+  name_prefix     = "lc_principal"
   image_id        = "ami-06a0cd9728546d178" //Amazon Linux 2
   instance_type   = "t3.micro"
   security_groups = [aws_security_group.sg-principal.id] //Define o SG
@@ -161,7 +161,7 @@ resource "aws_launch_configuration" "lc_principal" {
   //Define o Volume
   root_block_device {
     volume_type           = "gp2"
-    volume_size           = 50
+    volume_size           = 16
     delete_on_termination = true
   }
 }

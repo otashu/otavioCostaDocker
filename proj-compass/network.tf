@@ -22,7 +22,7 @@ resource "aws_subnet" "subnet-pub" {
   map_public_ip_on_launch = true //define se elas terão um ip público (como elas são públicas, precisam de um)
 }
 
-//Cria as subnets publicas
+//Cria as subnets privadas
 resource "aws_subnet" "subnet-priv" {
   count             = 2
   vpc_id            = aws_vpc.vpc.id
@@ -44,16 +44,6 @@ resource "aws_internet_gateway" "internet_gateway" {
   }
 }
 
-//Cria o Nat-Gateway
-resource "aws_nat_gateway" "nat_gateway" {
-  allocation_id = aws_eip.nat_eip.id          //precisa de um ip elástico
-  subnet_id     = aws_subnet.subnet-pub[0].id //a subnet precisa ser publica
-
-  tags = {
-    "Name" = "gw-priv"
-  }
-}
-
 //Cria o Ip elastico para o Nat-Gateway
 resource "aws_eip" "nat_eip" {
 
@@ -61,6 +51,16 @@ resource "aws_eip" "nat_eip" {
 
   tags = {
     "Name" = "eip-nat"
+  }
+}
+
+//Cria o Nat-Gateway
+resource "aws_nat_gateway" "nat_gateway" {
+  allocation_id = aws_eip.nat_eip.id          //precisa de um ip elástico
+  subnet_id     = aws_subnet.subnet-pub[0].id //a subnet precisa ser publica
+
+  tags = {
+    "Name" = "gw-priv"
   }
 }
 

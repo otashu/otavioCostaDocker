@@ -6,10 +6,14 @@ yum upgrade -y
 
 #instalar nfs-utils(necessario para o efs)
 yum install -y nfs-utils
+sudo yum install -y amazon-efs-utils
 #cria o diretorio onde o efs sera montado
 mkdir /efs
+#espera um pouco para ter certeza que o efs vai conseguir montar
+sleep 10
 #monta o efs
-sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport "${EFS_ID}":/ /efs
+mount -t efs -o tls "${EFS_ID}":/ /efs
+#mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport "${EFS_ID}":/ /efs
 #vai montar o efs automaticamente toda vez que a instancia for ligada
 echo "${EFS_ID}:/ /efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0" >> /etc/fstab
 

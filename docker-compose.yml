@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: "${DB_HOST}"
+      WORDPRESS_DB_USER: "admin"
+      WORDPRESS_DB_PASSWORD: "admin123"
+      WORDPRESS_DB_NAME: "wordpress"
+    volumes:
+      - /efs/wordpress:/var/www/html

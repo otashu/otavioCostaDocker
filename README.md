@@ -6,7 +6,7 @@ Este repositório tem como objetivo conter uma documentação necessária para c
   <img src="https://github.com/PinheiroChequin/TrabalhoDocker/assets/117855728/a739dc36-9159-4b95-8ed6-e633545a202f">
 </p>
 
-Na implementação da arquitetura acima, foi utilizado o Terraform visando aplicabilidade e eficiência. Todos os arquivos utilizados estão disponíveis no seguinte repositório: [Terraform](https://github.com/PinheiroChequin/TrabalhoDocker/tree/main/proj-compass).
+Na implementação da arquitetura acima, foi utilizado o Terraform visando aplicabilidade e eficiência. Todos os arquivos utilizados estão disponíveis no seguinte repositório: [Terraform](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass).
 
 A configuração das instâncias utilizadas encontra-se abaixo:
 
@@ -23,9 +23,9 @@ A configuração das instâncias utilizadas encontra-se abaixo:
 
 Observação: O docker, bem como o docker-compose já foram inicializados na criação das instâncias através do `userdata`.
 
-Todo o `userdata` encontra-se comentado em: [userdata](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/user_data.sh)
+Todo o `userdata` encontra-se comentado em: [userdata](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/user_data.sh)
 
-O script do docker-compose encontra-se em: [docker-compose](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/docker-compose.yml)
+O script do docker-compose encontra-se em: [docker-compose](https://github.com/otashu/otavioCostaDocker/blob/main/docker-compose.yml)
 
 # Configuração da VPC(Virtual Private Cloud)
 Com a Amazon Virtual Private Cloud (Amazon VPC), é possível iniciar recursos da AWS em uma rede virtual definida pelo usuário. Essa rede virtual é bem parecida com uma rede tradicional, com a vantagem de usar a infraestrutura da AWS.
@@ -52,7 +52,7 @@ Assim estará acessível em duas zonas de disponibilidade.
 
 -> Um `gateway` conecta a VPC a uma outra rede. Por exemplo, use um **gateway da Internet** para conectar a VPC à Internet.
 
-Toda configuração da VPC foi feita atráves do Terraform e encontra-se neste repositório: [VPC](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/network.tf)
+Toda configuração da VPC foi feita atráves do Terraform e encontra-se neste repositório: [VPC](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/network.tf)
 
 # Configuração do Aplication Load Balancer
 O Elastic Load Balancer utilizado distribui automaticamente o tráfego de entrada, monitorando a 'saúde' dos alvos e encaminhando o tráfego somente para esses alvos saudáveis.
@@ -68,7 +68,7 @@ Em resumo, nesta aplicação O Aplication Load Balancer recebe uma solicitação
 
 Na arquitetura proposta o Aplication Load Balancer irá receber o tráfego de clientes, o Listener a regra de protocolo HTTP e porta 80 e por fim o Target Group possui como alvo uma das duas instâncias com a aplicação do WordPress rodando. 
 
-Toda configuração do Load Balancer foi feita atráves do Terraform e encontra-se neste repositório: [Load Balancer](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/vm.tf)
+Toda configuração do Load Balancer foi feita atráves do Terraform e encontra-se neste repositório: [Load Balancer](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/vm.tf)
 
 # Configuração do RDS da AWS
 
@@ -79,18 +79,18 @@ O mecanismo de suporte ao banco de dados que foi utilizado é o MySQL.
 
 Na criação da instância, assim como qualquer banco de dados, foi criado o usuário principal, senha e nome do banco de dados. Além disso, na criação foi atribuído uma VPC e não foi dado um IP público a instância de banco de dados, sendo assim o acesso só é possível através das instâncias EC2 que encontram-se na mesma VPC que o banco de dados.
 
-Toda configuração do RDS foi feita atráves do Terraform e encontra-se neste repositório: [RDS](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/main.tf)
+Toda configuração do RDS foi feita atráves do Terraform e encontra-se neste repositório: [RDS](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/main.tf)
 # Configuração do Terraform
 
 Nota: É necessário possuir um par de chaves e as credenciais do usuário da AWS para prosseguir com a configuração do Terraform. 
 
-A configuração inicial do Terraform, do EFS e do RDS encontram-se no [`main.tf`](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/main.tf)
+A configuração inicial do Terraform, do EFS e do RDS encontram-se no [`main.tf`](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/main.tf)
 
-Toda configuração da VPC, com suas sub-redes, tabelas de rotas, gateway de internet e o NAT gateway encontram-se em [`network.tf`](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/network.tf)
+Toda configuração da VPC, com suas sub-redes, tabelas de rotas, gateway de internet e o NAT gateway encontram-se em [`network.tf`](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/network.tf)
 
 O [`outputs.tf`](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/outputs.tf) apenas mostrará o DNS do Load Balancer criado no Terraform.
 
-E por fim, a configuração das instâncias EC2 juntamente com a configuração do grupo de segurança, configuração do Load Balancer e do Auto Scaling encontram-se em [`vm.tf`](https://github.com/PinheiroChequin/TrabalhoDocker/blob/main/proj-compass/vm.tf)
+E por fim, a configuração das instâncias EC2 juntamente com a configuração do grupo de segurança, configuração do Load Balancer e do Auto Scaling encontram-se em [`vm.tf`](https://github.com/otashu/otavioCostaDocker/tree/main/proj-compass/vm.tf)
 
 Os códigos usados no Terraform encontram-se todos comentados nesse repositório.
 
